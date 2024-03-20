@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema name="schema_OLAP_2012500720">
+ <Dimension name="dimcabang" type="StandardDimension">
+  <Hierarchy name="CabangID" hasAll="true" allLevelName="All" primaryKey="cabang_id">
+   <Table name="cabang_dim" schema="dw_2012500720"/>
+   <Level name="kdcabang" column="KDCABANG" uniqueMembers="false"/>
+   <Level name="nmcabang" column="NMCABANG" uniqueMembers="false"/>
+  </Hierarchy>
+ </Dimension>
+ <Dimension name="dimgedung" type="StandardDimension">
+  <Hierarchy name="GedungID" hasAll="true" allLevelName="All" primaryKey="gedung_id">
+   <Table name="gedung_dim" schema="dw_2012500720"/>
+   <Level name="kdgedung" column="KDGEDUNG" uniqueMembers="false"/>
+   <Level name="nmgedung" column="NMGEDUNG" uniqueMembers="false"/>
+   <Level name="Harga" column="HARGA" uniqueMembers="false"/>
+  </Hierarchy>
+ </Dimension>
+ <Dimension name="dimpelanggan" type="StandardDimension">
+  <Hierarchy name="PelangganID" hasAll="true" allLevelName="All" primaryKey="pelanggan_id">
+   <Table name="pelanggan_dim" schema="dw_2012500720"/>
+   <Level name="kdplg" column="KDPLG" uniqueMembers="false"/>
+   <Level name="nmplg" column="NMPLG" uniqueMembers="false"/>
+   <Level name="telepon" column="TELEPON" uniqueMembers="false"/>
+   <Level name="pekerjaan" column="PEKERJAAN" uniqueMembers="false"/>
+  </Hierarchy>
+ </Dimension>
+ <Dimension name="dimperiode" type="StandardDimension">
+  <Hierarchy name="PeriodeID" hasAll="true" allLevelName="All" primaryKey="ID_PERIODE">
+   <Table name="periode_dim" schema="dw_2012500761"/>
+   <Level name="Tahun" column="TAHUN" uniqueMembers="false"/>
+   <Level name="Bulan" column="BULAN" uniqueMembers="false"/>
+  </Hierarchy>
+ </Dimension>
+ <Dimension name="dimsales" type="StandardDimension">
+  <Hierarchy name="SalesID" hasAll="true" allLevelName="All" primaryKey="sales_id">
+   <Table name="sales_dim" schema="dw_2012500720"/>
+   <Level name="kdsales" column="KDSALES" uniqueMembers="false"/>
+   <Level name="nmsales" column="NMSALES" uniqueMembers="false"/>
+   <Level name="pendidikan" column="PENDIDIKAN" uniqueMembers="false"/>
+  </Hierarchy>
+ </Dimension>
+ <Cube name="TOTALBAYAR">
+  <Table name="sewa_fact" schema="dw_2012500720"/>
+  <DimensionUsage source="dimcabang" name="dimcabang" foreignKey="cabang_id"/>
+  <DimensionUsage source="dimgedung" name="dimgedung" foreignKey="gedung_id"/>
+  <DimensionUsage source="dimperiode" name="dimperiode" foreignKey="periode_id"/>
+  <DimensionUsage source="dimpelanggan" name="dimpelanggan" foreignKey="pelanggan_id"/>
+  <DimensionUsage source="dimsales" name="dimsales" foreignKey="sales_id"/>
+  <Measure name="totalbayar" column="total_bayar" aggregator="sum"/>
+ </Cube>
+ <Cube name="TotalPendapatan">
+  <Table name="sewa_fact" schema="dw_2012500720"/>
+  <DimensionUsage source="dimcabang" name="dimcabang" foreignKey="cabang_id"/>
+  <DimensionUsage source="dimgedung" name="dimgedung" foreignKey="gedung_id"/>
+  <DimensionUsage source="dimpelanggan" name="dimpelanggan" foreignKey="pelanggan_id"/>
+  <DimensionUsage source="dimsales" name="dimsales" foreignKey="sales_id"/>
+  <DimensionUsage source="dimperiode" name="dimperiode" foreignKey="periode_id"/>
+  <Measure name="totalpendapatan" column="total_pendapatan" aggregator="sum"/>
+ </Cube>
+</Schema>

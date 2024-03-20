@@ -1,0 +1,39 @@
+insert into dw_2012500720.cabang_dim(cabang_id, KDCABANG, NMCABANG)
+select	null, KDCABANG, NMCABANG from db_2012500720.cabang;
+	
+
+insert into dw_2012500720.gedung_dim(gedung_id, KDGEDUNG, NMGEDUNG, HARGA)
+select	null, KDGEDUNG, NMGEDUNG, HARGA from db_2012500720.gedung;
+	
+	
+insert into dw_2012500720.pelanggan_dim(pelanggan_id, KDPLG, NMPLG, TELEPON, PEKERJAAN)
+select	null, KDPLG, NMPLG, TELEPON, PEKERJAAN from db_2012500720.pelanggan;
+
+INSERT  INTO dw_2012500720.periode_dim(periode_id, TAHUN, BULAN)
+	SELECT distinct	null, date_format(tglnota, '%Y'), date_format(tglnota, '%m')
+	FROM db_2012500720.nota;
+	
+insert into dw_2012500720.sales_dim(sales_id, KDSALES, NMSALES, PENDIDIKAN)
+select	null, KDSALES, NMSALES, PENDIDIKAN from db_2012500720.sales;
+
+
+insert into dw_2012500720.sewa_fact (sewa_id, NOSEWA, cabang_id, gedung_id, pelanggan_id, sales_id, periode_id, total_pendapatan, total_bayar)
+	SELECT	distinct	null, a.NOSEWA,
+	(select distinct	cabang_id from dw_2012500720.cabang_dim where KDCABANG=d.KDCABANG),
+	(select distinct	gedung_id from dw_2012500720.gedung_dim where KDGEDUNG=c.KDGEDUNG),
+	(select distinct	pelanggan_id from dw_2012500720.pelanggan_dim where KDPLG=b.KDPLG),	
+	(select distinct	sales_id from	dw_2012500720.sales_dim where KDSALES=e.KDSALES),
+	(select distinct	periode_id from dw_2012500720.periode_dim where	concat_ws ('-',TAHUN,BULAN)= date_format(a.TGLSEWA,'%Y-%m')),	
+	sum(a.JUMLAH) as total_bayar,
+	sum(a.JUMLAH * f.jmlbayar) as total_pendapatan
+	FROM	db_2012500720.sewa a, db_2012500720.pelanggan b, db_2012500720.gedung c, db_2012500720.cabang d, db_2012500720.sales e, db_2012500720.nota f
+	WHERE	a.KDPLG=b.KDPLG and a.KDGEDUNG=c.KDGEDUNG and a.KDCABANG=d.KDCABANG and a.KDSALES=e.KDSALES and a.NOSEWA=f.NOSEWA
+	GROUP BY a.NOSEWA,
+	(select distinct	cabang_id from dw_2012500720.cabang_dim where KDCABANG=d.KDCABANG),
+	(select distinct	gedung_id from dw_2012500720.gedung_dim where KDGEDUNG=c.KDGEDUNG),
+	(select distinct	pelanggan_id from dw_2012500720.pelanggan_dim where KDPLG=b.KDPLG),	
+	(select distinct	sales_id from	dw_2012500720.sales_dim where KDSALES=e.KDSALES),
+	(select distinct	periode_id from dw_2012500720.periode_dim where	concat_ws (TAHUN,'-',BULAN)= date_format(a.TGLSEWA,'%Y-%m'));
+
+
+
