@@ -1,0 +1,11 @@
+def print_faktor(x) :
+    """Fungsi Menerima input bilangan dan mencetak faktornya"""
+
+    print("Faktor dari",x,"adalah : ")
+    for i in range (1,x+1):
+        if x % i == 0:
+            print(i)
+
+num = int(input("Masukan bilangan: "))
+
+print_faktor(num)
